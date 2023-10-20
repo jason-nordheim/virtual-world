@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { Canvas } from "./components";
 import { Point, Segment, generateRandomPoint, generateRandomSegment, pointExists, segmentExists } from "./lib";
+import { useGraph } from "./hooks";
 
 const CANVAS = {
   height: 600,
@@ -21,34 +22,12 @@ const demoSegments: Segment[] = [
   { p1: demoPoints[1], p2: demoPoints[3] },
 ];
 function App() {
-  const [points, setPoints] = useState<Point[]>(demoPoints);
-  const [segments, setSegments] = useState<Segment[]>(demoSegments);
-
-  const addRandomPoint = () => {
-    const p = generateRandomPoint(CANVAS.height, CANVAS.width);
-    if (pointExists(p, points)) {
-      addRandomPoint();
-    } else {
-      setPoints([...points, p]);
-    }
-  };
-
-  const addRandomSegment = () => {
-    // there must be at least 2 points to connect
-    if (points.length < 2) return;
-    const segment: Segment = generateRandomSegment(points);
-    const exists = segmentExists(segment, segments);
-    if (!exists) {
-      setSegments([...segments, segment]);
-    } else {
-      console.warn("segment already exists");
-    }
-  };
+  const { graph, addRandomPoint, addRandomSegment } = useGraph(CANVAS.height, CANVAS.width);
 
   return (
     <>
       <h1>World Editor</h1>
-      <Canvas height={CANVAS.height} width={CANVAS.width} points={points} segments={segments} />
+      <Canvas height={CANVAS.height} width={CANVAS.width} points={graph.points} segments={graph.segments} />
       <div id="controls">
         <button onClick={() => addRandomPoint()}>Add Point</button>
         <button onClick={() => addRandomSegment()}>Add Segment</button>
