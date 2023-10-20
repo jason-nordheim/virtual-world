@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { Graph, Point, Segment, generateRandomPoint, generateRandomSegment, pointExists, segmentExists } from "../lib";
 
-export const useGraph = (height: number, width: number) => {
-  const [points, setPoints] = useState<Point[]>([]);
-  const [segments, setSegments] = useState<Segment[]>([]);
+type UseGraphParams = {
+  height: number;
+  width: number;
+  prePopulate?: {
+    points: Point[];
+    segments: Segment[];
+  };
+};
+
+export const useGraph = ({ height, width, prePopulate }: UseGraphParams) => {
+  const [points, setPoints] = useState<Point[]>(prePopulate?.points || []);
+  const [segments, setSegments] = useState<Segment[]>(prePopulate?.segments || []);
 
   const addRandomPoint = () => {
     const p = generateRandomPoint(height, width);
