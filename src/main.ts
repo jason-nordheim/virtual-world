@@ -48,6 +48,11 @@ modeToggle.addEventListener("change", (evt) => {
 clearSelectedBtn.onclick = () => {
   graph.clearSelected();
 };
+document.addEventListener("keydown", (evt) => {
+  if (evt.key == "Escape") {
+    graph.clearSelected();
+  }
+});
 
 function animate() {
   graph.display();
