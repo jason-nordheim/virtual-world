@@ -193,11 +193,20 @@ export class Graph {
       // find connected segments
       this.segments = this.segments.filter((s) => !s.includes(p));
       this.points = this.points.filter((gp) => !gp.equals(p));
+      if (this.hovered && this.hovered.equals(p)) {
+        this.hovered = undefined;
+      }
+      if (this.selected && this.selected.equals(p)) {
+        this.selected = undefined;
+      }
     }
   }
 
   public display() {
     this.clear();
+    for (let i = 0; i < this.segments.length; i++) {
+      this.drawSegment(this.segments[i]);
+    }
     for (let i = 0; i < this.points.length; i++) {
       if (this.selected && this.points[i].equals(this.selected)) {
         this.drawPoint(this.points[i], { outline: true });
@@ -206,9 +215,6 @@ export class Graph {
       } else {
         this.drawPoint(this.points[i]);
       }
-    }
-    for (let i = 0; i < this.segments.length; i++) {
-      this.drawSegment(this.segments[i]);
     }
   }
 }
