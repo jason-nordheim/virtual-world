@@ -18,6 +18,7 @@ export type PointDrawOptions = {
 export type SegmentDrawOptions = {
   width: number;
   color: string;
+  dash: [number, number];
 };
 
 const DEFAULTS = {
@@ -36,6 +37,7 @@ const DEFAULTS = {
     SEGMENT: {
       width: 2,
       color: "black",
+      dash: [],
     },
   },
 };
@@ -177,9 +179,11 @@ export class Graph {
     this.ctx.beginPath();
     this.ctx.lineWidth = completeOpts.width;
     this.ctx.strokeStyle = completeOpts.color;
+    this.ctx.setLineDash(completeOpts.dash);
     this.ctx.moveTo(s.p1.x, s.p1.y);
     this.ctx.lineTo(s.p2.x, s.p2.y);
     this.ctx.stroke();
+    this.ctx.setLineDash([]); // reset
   }
 
   private clear() {
@@ -246,8 +250,9 @@ export class Graph {
     }
     for (let i = 0; i < this.points.length; i++) {
       if (this.selected && this.points[i].equals(this.selected)) {
+        // snapping logic
         const intent = new Segment(this.selected, this.hovered || this.mouse);
-        this.drawSegment(intent, { color: "yellow" });
+        this.drawSegment(intent, { color: "yellow", dash: [2, 2] });
         this.drawPoint(this.points[i], { outline: true });
       } else if (this.hovered && this.points[i].equals(this.hovered)) {
         this.drawPoint(this.points[i], { fill: true });
