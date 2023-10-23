@@ -246,6 +246,8 @@ export class Graph {
     }
     for (let i = 0; i < this.points.length; i++) {
       if (this.selected && this.points[i].equals(this.selected)) {
+        const intent = new Segment(this.selected, this.hovered || this.mouse);
+        this.drawSegment(intent, { color: "yellow" });
         this.drawPoint(this.points[i], { outline: true });
       } else if (this.hovered && this.points[i].equals(this.hovered)) {
         this.drawPoint(this.points[i], { fill: true });
