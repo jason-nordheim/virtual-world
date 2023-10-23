@@ -50,6 +50,7 @@ export class Graph {
   // state
   private points: Point[] = [];
   private segments: Segment[] = [];
+  private previouslySelected?: Point;
   private selected?: Point;
   private hovered?: Point;
   private mode: GraphMode = "add";
@@ -73,12 +74,22 @@ export class Graph {
         this.hovered = getNearestPoint(p, this.points, 10);
 
         if (this.hovered) {
+          this.previouslySelected = this.selected;
           this.selected = this.hovered;
+          if (this.previouslySelected && this.selected) {
+            const s = new Segment(this.previouslySelected, this.selected);
+            this.addSegment(s);
+          }
           return;
         }
 
         this.addPoint(p);
+        this.previouslySelected = this.selected;
         this.selected = p;
+        if (this.previouslySelected && this.selected) {
+          const s = new Segment(this.previouslySelected, this.selected);
+          this.addSegment(s);
+        }
       }
 
       if (this.mode === "remove") {
