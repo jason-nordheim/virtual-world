@@ -56,6 +56,7 @@ document.addEventListener("keydown", (evt) => {
 
 function animate() {
   graph.display();
+
   requestAnimationFrame(animate);
 }
 animate();

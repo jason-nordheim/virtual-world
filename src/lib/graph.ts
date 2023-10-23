@@ -58,6 +58,8 @@ export class Graph {
   private mode: GraphMode = "add";
   private dragging: boolean = false;
   private mouse: Point = new Point(0, 0);
+  private _zoom: number = 1;
+  private _zoomScale: number = 0.1;
 
   constructor(canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.canvas = canvas;
@@ -70,18 +72,23 @@ export class Graph {
     this.canvas.style.height = `${opts.height}px`;
 
     // add event listeners
-    this.canvas.addEventListener("mousedown", (evt) => {
-      this.handleMouseDown(evt);
-    });
-    this.canvas.addEventListener("mousemove", (evt) => {
-      this.handleMouseMove(evt);
-    });
-    this.canvas.addEventListener("mouseup", () => {
-      this.handleMouseUp();
-    });
-    this.canvas.addEventListener("contextmenu", (evt) => {
-      this.handleRightClick(evt);
-    });
+    this.canvas.addEventListener("mousedown", (evt) => this.handleMouseDown(evt));
+    this.canvas.addEventListener("mousemove", (evt) => this.handleMouseMove(evt));
+    this.canvas.addEventListener("mouseup", () => this.handleMouseUp());
+    this.canvas.addEventListener("contextmenu", (evt) => this.handleRightClick(evt));
+    if (document) {
+      document.addEventListener("wheel", (evt) => {
+        const sign = Math.sign(evt.deltaY);
+        this._zoom = Math.max(1, Math.min(5, this._zoom + this._zoom * sign * this._zoomScale));
+      });
+    }
+  }
+
+  private dispose() {
+    this.canvas.removeEventListener("mousedown", (evt) => this.handleMouseDown(evt));
+    this.canvas.removeEventListener("mousemove", (evt) => this.handleMouseMove(evt));
+    this.canvas.removeEventListener("mouseup", () => this.handleMouseUp());
+    this.canvas.removeEventListener("contextmenu", (evt) => this.handleRightClick(evt));
   }
 
   private get ctx() {
@@ -130,14 +137,6 @@ export class Graph {
       this.selected.x = evt.offsetX;
       this.selected.y = evt.offsetY;
     }
-  }
-
-  private getRandomX() {
-    return Math.floor(Math.random() * this.height);
-  }
-
-  private getRandomY() {
-    return Math.floor(Math.random() * this.width);
   }
 
   private pointExists(p: Point) {
@@ -240,6 +239,32 @@ export class Graph {
     }
   }
 
+  private updateViewport() {
+    const scale = 1 / this._zoom;
+    this.ctx.scale(scale, scale);
+  }
+
+  private drawSegments() {
+    for (let i = 0; i < this.segments.length; i++) {
+      this.drawSegment(this.segments[i]);
+    }
+  }
+
+  private drawPoints() {
+    for (let i = 0; i < this.points.length; i++) {
+      if (this.selected && this.points[i].equals(this.selected)) {
+        // snapping logic
+        const intent = new Segment(this.selected, this.hovered || this.mouse);
+        this.drawSegment(intent, { color: "yellow", dash: [2, 2] });
+        this.drawPoint(this.points[i], { outline: true });
+      } else if (this.hovered && this.points[i].equals(this.hovered)) {
+        this.drawPoint(this.points[i], { fill: true });
+      } else {
+        this.drawPoint(this.points[i]);
+      }
+    }
+  }
+
   public select(point: Point) {
     this.previouslySelected = this.selected;
     this.selected = point;
@@ -255,20 +280,11 @@ export class Graph {
 
   public display() {
     this.clear();
-    for (let i = 0; i < this.segments.length; i++) {
-      this.drawSegment(this.segments[i]);
-    }
-    for (let i = 0; i < this.points.length; i++) {
-      if (this.selected && this.points[i].equals(this.selected)) {
-        // snapping logic
-        const intent = new Segment(this.selected, this.hovered || this.mouse);
-        this.drawSegment(intent, { color: "yellow", dash: [2, 2] });
-        this.drawPoint(this.points[i], { outline: true });
-      } else if (this.hovered && this.points[i].equals(this.hovered)) {
-        this.drawPoint(this.points[i], { fill: true });
-      } else {
-        this.drawPoint(this.points[i]);
-      }
-    }
+    this.ctx.save();
+    this.updateViewport();
+    this.drawSegments();
+    this.drawPoints();
+    this.ctx.restore();
+    this.ctx.restore();
   }
 }
