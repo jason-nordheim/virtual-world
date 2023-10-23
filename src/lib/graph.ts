@@ -70,56 +70,66 @@ export class Graph {
     this.canvas.style.height = `${opts.height}px`;
 
     // add event listeners
-
-    // mousedown
     this.canvas.addEventListener("mousedown", (evt) => {
-      if (evt.button !== 0) return;
-
-      if (this.mode === "add") {
-        this.dragging = true;
-        this.hovered = getNearestPoint(this.mouse, this.points, 10);
-
-        if (this.hovered) {
-          this.select(this.hovered);
-          return;
-        }
-
-        this.addPoint(this.mouse);
-        this.select(this.mouse);
-      }
-
-      if (this.mode === "remove") {
-        const nearest = getNearestPoint(this.mouse, this.points);
-        if (nearest) {
-          this.removePoint(nearest);
-        }
-      }
+      this.handleMouseDown(evt);
     });
-
-    // mousemove
     this.canvas.addEventListener("mousemove", (evt) => {
-      this.mouse = new Point(evt.offsetX, evt.offsetY);
-      this.hovered = getNearestPoint(this.mouse, this.points, 10);
-
-      if (this.dragging && this.selected) {
-        this.selected.x = evt.offsetX;
-        this.selected.y = evt.offsetY;
-      }
+      this.handleMouseMove(evt);
     });
-
     this.canvas.addEventListener("mouseup", () => {
-      this.dragging = false;
+      this.handleMouseUp();
     });
-
     this.canvas.addEventListener("contextmenu", (evt) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-      this.clearSelected();
+      this.handleRightClick(evt);
     });
   }
 
   private get ctx() {
     return this.canvas.getContext("2d")!;
+  }
+
+  private handleRightClick(evt: MouseEvent) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    this.clearSelected();
+  }
+
+  private handleMouseUp() {
+    this.dragging = false;
+  }
+
+  private handleMouseDown(evt: MouseEvent) {
+    if (evt.button !== 0) return;
+
+    if (this.mode === "add") {
+      this.dragging = true;
+      this.hovered = getNearestPoint(this.mouse, this.points, 10);
+
+      if (this.hovered) {
+        this.select(this.hovered);
+        return;
+      }
+
+      this.addPoint(this.mouse);
+      this.select(this.mouse);
+    }
+
+    if (this.mode === "remove") {
+      const nearest = getNearestPoint(this.mouse, this.points);
+      if (nearest) {
+        this.removePoint(nearest);
+      }
+    }
+  }
+
+  private handleMouseMove(evt: MouseEvent) {
+    this.mouse = new Point(evt.offsetX, evt.offsetY);
+    this.hovered = getNearestPoint(this.mouse, this.points, 10);
+
+    if (this.dragging && this.selected) {
+      this.selected.x = evt.offsetX;
+      this.selected.y = evt.offsetY;
+    }
   }
 
   private getRandomX() {
