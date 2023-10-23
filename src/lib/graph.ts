@@ -78,22 +78,12 @@ export class Graph {
         this.hovered = getNearestPoint(p, this.points, 10);
 
         if (this.hovered) {
-          this.previouslySelected = this.selected;
-          this.selected = this.hovered;
-          if (this.previouslySelected && this.selected) {
-            const s = new Segment(this.previouslySelected, this.selected);
-            this.addSegment(s);
-          }
+          this.select(this.hovered);
           return;
         }
 
         this.addPoint(p);
-        this.previouslySelected = this.selected;
-        this.selected = p;
-        if (this.previouslySelected && this.selected) {
-          const s = new Segment(this.previouslySelected, this.selected);
-          this.addSegment(s);
-        }
+        this.select(p);
       }
 
       if (this.mode === "remove") {
@@ -234,6 +224,15 @@ export class Graph {
       if (this.selected && this.selected.equals(p)) {
         this.selected = undefined;
       }
+    }
+  }
+
+  public select(point: Point) {
+    this.previouslySelected = this.selected;
+    this.selected = point;
+    if (this.selected && this.previouslySelected) {
+      const s = new Segment(this.previouslySelected, this.selected);
+      this.addSegment(s);
     }
   }
 
