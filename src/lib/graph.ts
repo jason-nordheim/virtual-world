@@ -1,3 +1,4 @@
+import { getNearestPoint } from "./graph.utils";
 import { Point } from "./point";
 import { Segment } from "./segment";
 
@@ -11,6 +12,7 @@ export type PointDrawOptions = {
   size: number;
   color: string;
   outline: boolean;
+  fill: boolean;
 };
 
 export type SegmentDrawOptions = {
@@ -29,6 +31,7 @@ const DEFAULTS = {
       size: 18,
       color: "black",
       outline: false,
+      fill: false,
     },
     SEGMENT: {
       width: 2,
@@ -36,6 +39,8 @@ const DEFAULTS = {
     },
   },
 };
+
+type GraphMode = "add" | "remove";
 
 export class Graph {
   private canvas: HTMLCanvasElement;
@@ -46,6 +51,8 @@ export class Graph {
   private points: Point[] = [];
   private segments: Segment[] = [];
   private selected?: Point;
+  private hovered?: Point;
+  private mode: GraphMode = "add";
 
   constructor(canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.canvas = canvas;
@@ -59,9 +66,29 @@ export class Graph {
 
     // add event listeners
     this.canvas.addEventListener("mousedown", (evt) => {
+      if (this.mode === "add") {
+        const p = new Point(evt.offsetX, evt.offsetY);
+        this.hovered = getNearestPoint(p, this.points, 10);
+        if (this.hovered) {
+          this.selected = this.hovered;
+          return;
+        }
+        this.addPoint(p);
+        this.selected = p;
+      }
+
+      if (this.mode === "remove") {
+        const p = new Point(evt.offsetX, evt.offsetY);
+        const nearest = getNearestPoint(p, this.points);
+        if (nearest) {
+          this.removePoint(nearest);
+        }
+      }
+    });
+
+    this.canvas.addEventListener("mousemove", (evt) => {
       const p = new Point(evt.offsetX, evt.offsetY);
-      this.addPoint(p);
-      this.selected = p;
+      this.hovered = getNearestPoint(p, this.points, 10);
     });
   }
 
@@ -111,6 +138,14 @@ export class Graph {
       this.ctx.arc(p.x, p.y, outlineRad, 0, Math.PI * 2);
       this.ctx.stroke();
     }
+
+    if (completeOpts.fill) {
+      const outlineRad = rad * 0.6;
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, outlineRad, 0, Math.PI * 2);
+      this.ctx.fillStyle = "yellow";
+      this.ctx.fill();
+    }
   }
 
   private drawSegment(s: Segment, opts?: Partial<SegmentDrawOptions>) {
@@ -125,6 +160,10 @@ export class Graph {
 
   private clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
+  }
+
+  public setMode(mode: GraphMode) {
+    this.mode = mode;
   }
 
   public addPoint(p: Point) {
@@ -147,11 +186,23 @@ export class Graph {
     }
   }
 
+  private removePoint(p: Point) {
+    if (!this.pointExists(p)) {
+      console.warn("point does not exist");
+    } else {
+      // find connected segments
+      this.segments = this.segments.filter((s) => !s.includes(p));
+      this.points = this.points.filter((gp) => !gp.equals(p));
+    }
+  }
+
   public display() {
     this.clear();
     for (let i = 0; i < this.points.length; i++) {
       if (this.selected && this.points[i].equals(this.selected)) {
         this.drawPoint(this.points[i], { outline: true });
+      } else if (this.hovered && this.points[i].equals(this.hovered)) {
+        this.drawPoint(this.points[i], { fill: true });
       } else {
         this.drawPoint(this.points[i]);
       }

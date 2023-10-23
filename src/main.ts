@@ -2,6 +2,18 @@ import { Graph, Point, Segment } from "./lib";
 import "./style.css";
 
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+const controls = document.querySelector("#controls");
+
+const modeToggle = document.createElement("select");
+modeToggle.name = "modeToggle";
+const modeAdd = document.createElement("option");
+modeAdd.value = modeAdd.text = "add";
+const modeRemove = document.createElement("option");
+modeRemove.value = modeRemove.text = "remove";
+modeToggle.appendChild(modeRemove);
+modeToggle.appendChild(modeAdd);
+modeToggle.value = "add";
+controls?.appendChild(modeToggle);
 
 const p1 = new Point(200, 200);
 const p2 = new Point(500, 200);
@@ -24,6 +36,11 @@ graph.addSegment(s1);
 graph.addSegment(s2);
 graph.addSegment(s3);
 graph.addSegment(s4);
+
+modeToggle.addEventListener("change", (evt) => {
+  // @ts-expect-error
+  graph.setMode(evt.target.value);
+});
 
 function animate() {
   graph.display();
