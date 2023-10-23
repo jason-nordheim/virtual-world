@@ -4,6 +4,9 @@ import "./style.css";
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const controls = document.querySelector("#controls");
 
+const clearSelectedBtn = document.createElement("button");
+clearSelectedBtn.textContent = "Clear Selection";
+
 const modeToggle = document.createElement("select");
 modeToggle.name = "modeToggle";
 const modeAdd = document.createElement("option");
@@ -14,6 +17,7 @@ modeToggle.appendChild(modeRemove);
 modeToggle.appendChild(modeAdd);
 modeToggle.value = "add";
 controls?.appendChild(modeToggle);
+controls?.appendChild(clearSelectedBtn);
 
 const p1 = new Point(200, 200);
 const p2 = new Point(500, 200);
@@ -41,6 +45,9 @@ modeToggle.addEventListener("change", (evt) => {
   // @ts-expect-error
   graph.setMode(evt.target.value);
 });
+clearSelectedBtn.onclick = () => {
+  graph.clearSelected();
+};
 
 function animate() {
   graph.display();
