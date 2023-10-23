@@ -55,6 +55,7 @@ export class Graph {
   private hovered?: Point;
   private mode: GraphMode = "add";
   private dragging: boolean = false;
+  private mouse: Point = new Point(0, 0);
 
   constructor(canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.canvas = canvas;
@@ -74,21 +75,19 @@ export class Graph {
 
       if (this.mode === "add") {
         this.dragging = true;
-        const p = new Point(evt.offsetX, evt.offsetY);
-        this.hovered = getNearestPoint(p, this.points, 10);
+        this.hovered = getNearestPoint(this.mouse, this.points, 10);
 
         if (this.hovered) {
           this.select(this.hovered);
           return;
         }
 
-        this.addPoint(p);
-        this.select(p);
+        this.addPoint(this.mouse);
+        this.select(this.mouse);
       }
 
       if (this.mode === "remove") {
-        const p = new Point(evt.offsetX, evt.offsetY);
-        const nearest = getNearestPoint(p, this.points);
+        const nearest = getNearestPoint(this.mouse, this.points);
         if (nearest) {
           this.removePoint(nearest);
         }
@@ -97,8 +96,8 @@ export class Graph {
 
     // mousemove
     this.canvas.addEventListener("mousemove", (evt) => {
-      const p = new Point(evt.offsetX, evt.offsetY);
-      this.hovered = getNearestPoint(p, this.points, 10);
+      this.mouse = new Point(evt.offsetX, evt.offsetY);
+      this.hovered = getNearestPoint(this.mouse, this.points, 10);
 
       if (this.dragging && this.selected) {
         this.selected.x = evt.offsetX;
