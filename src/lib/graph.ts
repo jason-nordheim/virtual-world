@@ -67,7 +67,11 @@ export class Graph {
     this.canvas.style.height = `${opts.height}px`;
 
     // add event listeners
+
+    // mousedown
     this.canvas.addEventListener("mousedown", (evt) => {
+      if (evt.button !== 0) return;
+
       if (this.mode === "add") {
         this.dragging = true;
         const p = new Point(evt.offsetX, evt.offsetY);
@@ -101,6 +105,7 @@ export class Graph {
       }
     });
 
+    // mousemove
     this.canvas.addEventListener("mousemove", (evt) => {
       const p = new Point(evt.offsetX, evt.offsetY);
       this.hovered = getNearestPoint(p, this.points, 10);
@@ -113,6 +118,12 @@ export class Graph {
 
     this.canvas.addEventListener("mouseup", () => {
       this.dragging = false;
+    });
+
+    this.canvas.addEventListener("contextmenu", (evt) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      this.clearSelected();
     });
   }
 
@@ -224,6 +235,10 @@ export class Graph {
         this.selected = undefined;
       }
     }
+  }
+
+  public clearSelected() {
+    this.selected = undefined;
   }
 
   public display() {
