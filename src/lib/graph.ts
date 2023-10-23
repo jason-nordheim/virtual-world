@@ -10,6 +10,7 @@ export type GraphOpts = {
 export type PointDrawOptions = {
   size: number;
   color: string;
+  outline: boolean;
 };
 
 export type SegmentDrawOptions = {
@@ -27,6 +28,7 @@ const DEFAULTS = {
     POINT: {
       size: 18,
       color: "black",
+      outline: false,
     },
     SEGMENT: {
       width: 2,
@@ -39,8 +41,11 @@ export class Graph {
   private canvas: HTMLCanvasElement;
   private height: number;
   private width: number;
+
+  // state
   private points: Point[] = [];
   private segments: Segment[] = [];
+  private selected?: Point;
 
   constructor(canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.canvas = canvas;
@@ -51,6 +56,13 @@ export class Graph {
     this.canvas.style.backgroundColor = opts.backgroundColor;
     this.canvas.style.width = `${opts.width}px`;
     this.canvas.style.height = `${opts.height}px`;
+
+    // add event listeners
+    this.canvas.addEventListener("mousedown", (evt) => {
+      const p = new Point(evt.offsetX, evt.offsetY);
+      this.addPoint(p);
+      this.selected = p;
+    });
   }
 
   private get ctx() {
@@ -83,18 +95,29 @@ export class Graph {
     return false;
   }
 
-  private drawPoint(p: Point, opts: PointDrawOptions = DEFAULTS.DRAW.POINT) {
-    const rad = opts.size / 2;
+  private drawPoint(p: Point, opts?: Partial<PointDrawOptions>) {
+    const completeOpts = { ...DEFAULTS.DRAW.POINT, ...opts };
+    const rad = completeOpts.size / 2;
     this.ctx.beginPath();
-    this.ctx.fillStyle = opts.color;
+    this.ctx.fillStyle = completeOpts.color;
     this.ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
     this.ctx.fill();
+
+    if (completeOpts.outline) {
+      const outlineRad = rad * 0.6;
+      this.ctx.beginPath();
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeStyle = "yellow";
+      this.ctx.arc(p.x, p.y, outlineRad, 0, Math.PI * 2);
+      this.ctx.stroke();
+    }
   }
 
-  private drawSegment(s: Segment, opts: SegmentDrawOptions = DEFAULTS.DRAW.SEGMENT) {
+  private drawSegment(s: Segment, opts?: Partial<SegmentDrawOptions>) {
+    const completeOpts = { ...DEFAULTS.DRAW.SEGMENT, ...opts };
     this.ctx.beginPath();
-    this.ctx.lineWidth = opts.width;
-    this.ctx.strokeStyle = opts.color;
+    this.ctx.lineWidth = completeOpts.width;
+    this.ctx.strokeStyle = completeOpts.color;
     this.ctx.moveTo(s.p1.x, s.p1.y);
     this.ctx.lineTo(s.p2.x, s.p2.y);
     this.ctx.stroke();
@@ -127,7 +150,11 @@ export class Graph {
   public display() {
     this.clear();
     for (let i = 0; i < this.points.length; i++) {
-      this.drawPoint(this.points[i]);
+      if (this.selected && this.points[i].equals(this.selected)) {
+        this.drawPoint(this.points[i], { outline: true });
+      } else {
+        this.drawPoint(this.points[i]);
+      }
     }
     for (let i = 0; i < this.segments.length; i++) {
       this.drawSegment(this.segments[i]);
