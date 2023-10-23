@@ -1,5 +1,6 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import { Graph } from "./lib";
+import "./style.css";
 
+const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+
+const graph = new Graph(canvas);
