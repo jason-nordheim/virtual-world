@@ -2,6 +2,16 @@ import { Graph, Point, Segment } from "./lib";
 import { GraphEditor } from "./lib/GraphEditor";
 import "./style.css";
 
+const p1 = new Point(200, 200);
+const p2 = new Point(500, 200);
+const p3 = new Point(400, 400);
+const p4 = new Point(100, 300);
+
+const s1 = new Segment(p1, p2);
+const s2 = new Segment(p1, p3);
+const s3 = new Segment(p1, p4);
+const s4 = new Segment(p2, p3);
+
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const controls = document.querySelector("#controls");
 
@@ -23,29 +33,21 @@ modeToggle.value = "pan";
 controls?.appendChild(modeToggle);
 controls?.appendChild(clearSelectedBtn);
 
-const p1 = new Point(200, 200);
-const p2 = new Point(500, 200);
-const p3 = new Point(400, 400);
-const p4 = new Point(100, 300);
+const resetBtn = document.createElement("button");
+resetBtn.textContent = "reset";
+const saveBtn = document.createElement("button");
+saveBtn.textContent = "save";
 
-const s1 = new Segment(p1, p2);
-const s2 = new Segment(p1, p3);
-const s3 = new Segment(p1, p4);
-const s4 = new Segment(p2, p3);
-
-const graph = new Graph(canvas);
-
-graph.addPoint(p1);
-graph.addPoint(p2);
-graph.addPoint(p3);
-graph.addPoint(p4);
-
-graph.addSegment(s1);
-graph.addSegment(s2);
-graph.addSegment(s3);
-graph.addSegment(s4);
+const graphString = localStorage.getItem("graph");
+const data = graphString ? JSON.parse(graphString) : undefined;
+const graph = new Graph(canvas, data);
 
 const editor = new GraphEditor(graph, canvas);
+
+resetBtn.addEventListener("click", () => editor.dispose());
+saveBtn.addEventListener("click", () => editor.save());
+controls?.appendChild(resetBtn);
+controls?.appendChild(saveBtn);
 
 modeToggle.addEventListener("change", (evt) => {
   // @ts-expect-error

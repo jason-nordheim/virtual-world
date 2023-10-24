@@ -93,6 +93,14 @@ export class GraphEditor {
     }
   }
 
+  public dispose() {
+    this.graph.reset();
+  }
+
+  public save() {
+    localStorage.setItem("graph", JSON.stringify({ points: this.graph.points, segments: this.graph.segments }));
+  }
+
   public display() {
     this.view.restore();
     this.view.clear();

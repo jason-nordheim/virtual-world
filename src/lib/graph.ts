@@ -2,6 +2,11 @@ import { drawPoints, drawSegments } from "./draw";
 import { Point } from "./Point";
 import { Segment } from "./Segment";
 
+type PreLoadData = {
+  points: Point[];
+  segments: Segment[];
+};
+
 /// represents the actual data
 export class Graph {
   private canvas: HTMLCanvasElement;
@@ -14,8 +19,12 @@ export class Graph {
   public hovered?: Point;
   public dragging: boolean = false;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, preload?: PreLoadData) {
     this.canvas = canvas;
+    if (preload) {
+      this._points = preload.points;
+      this._segments = preload.segments;
+    }
   }
 
   private get ctx() {
@@ -91,6 +100,14 @@ export class Graph {
       const s = new Segment(this.previouslySelected, this.selected);
       this.addSegment(s);
     }
+  }
+
+  public reset() {
+    this._points = [];
+    this._segments = [];
+    this.previouslySelected = undefined;
+    this.selected = undefined;
+    this.hovered = undefined;
   }
 
   public clearSelected() {
