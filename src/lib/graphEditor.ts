@@ -94,10 +94,10 @@ export class GraphEditor {
   }
 
   public display() {
+    this.view.restore();
     this.view.clear();
     this.view.save();
     this.view.update();
     this.graph.draw(this.mouseWithOffset);
-    this.view.restore();
   }
 }
