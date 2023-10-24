@@ -9,7 +9,7 @@ export class GraphEditor {
   private canvas: HTMLCanvasElement;
   private graph: Graph;
   private view: GraphView;
-  private mode: GraphMode = "add";
+  private mode: GraphMode = "pan";
   private mouse: Point = new Point(0, 0);
 
   constructor(graph: Graph, canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
@@ -38,7 +38,7 @@ export class GraphEditor {
     this.graph.dragging = false;
 
     if (this.view.drag.active) {
-      this.view.offset = this.view.getOffset();
+      this.view.offset = this.view.getOffsetWithDrag();
       this.view.resetDrag();
     }
   }
@@ -88,7 +88,6 @@ export class GraphEditor {
     if (this.view.drag.active) {
       this.view.drag.end = this.view.getMousePosition(evt);
       this.view.drag.offset = subtract(this.view.drag.end, this.view.drag.start);
-      console.log(JSON.stringify(this.view.drag));
     }
   }
 

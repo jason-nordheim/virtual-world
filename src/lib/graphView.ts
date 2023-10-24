@@ -59,7 +59,7 @@ export class GraphView {
     return subtractOffset ? subtract(p, this.drag.offset) : p;
   }
 
-  public getOffset() {
+  public getOffsetWithDrag() {
     return add(this.offset, this.drag.offset);
   }
 
@@ -73,13 +73,14 @@ export class GraphView {
 
   public update() {
     const s = this.getScale();
+    this.ctx.translate(this.center.x, this.center.y);
     this.ctx.scale(s, s);
-    this.ctx.translate(this.offset.x, this.offset.y);
+    const offset = this.getOffsetWithDrag();
+    this.ctx.translate(offset.x, offset.y);
   }
 
   public resetDrag() {
     this.drag = new Drag();
-    console.log("drag reset", this.drag);
   }
 
   public restore() {

@@ -19,7 +19,7 @@ modePan.value = modePan.textContent = "pan";
 modeToggle.appendChild(modeRemove);
 modeToggle.appendChild(modeAdd);
 modeToggle.appendChild(modePan);
-modeToggle.value = "add";
+modeToggle.value = "pan";
 controls?.appendChild(modeToggle);
 controls?.appendChild(clearSelectedBtn);
 

@@ -34,7 +34,7 @@ export const drawSegment = (ctx: CanvasRenderingContext2D, s: Segment, opts?: Pa
   ctx.lineWidth = completeOpts.width;
   ctx.strokeStyle = completeOpts.color;
   ctx.setLineDash(completeOpts.dash);
-  ctx.moveTo(s.p1.x, s.p1.y);
+  ctx.moveTo(s.p1.x, s.p1.y); 
   ctx.lineTo(s.p2.x, s.p2.y);
   ctx.stroke();
   ctx.setLineDash([]); // reset
