@@ -1,4 +1,4 @@
-import { Point } from "./point";
+import { Point } from "./Point";
 
 export class Segment {
   p1: Point;

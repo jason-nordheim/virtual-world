@@ -1,3 +1,3 @@
-export * from "./graph";
-export * from "./point";
-export * from "./segment";
+export * from "./Graph";
+export * from "./Point";
+export * from "./Segment";

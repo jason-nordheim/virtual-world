@@ -1,5 +1,5 @@
-import { Point } from "./point";
-import { Graph } from "./graph";
+import { Point } from "./Point";
+import { Graph } from "./Graph";
 import { DEFAULTS, GraphMode, GraphOpts } from "./common";
 import { getNearestPoint, subtract } from "./math";
 import { GraphView } from "./GraphView";

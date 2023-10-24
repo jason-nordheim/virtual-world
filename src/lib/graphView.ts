@@ -1,7 +1,7 @@
 import { Drag } from "./Drag";
 import { GraphOpts } from "./common";
 import { add, clamp, scale, subtract } from "./math";
-import { Point } from "./point";
+import { Point } from "./Point";
 
 const ZOOM_STEP = 0.1;
 const ZOOM_MAX = 5;

@@ -1,4 +1,4 @@
-import { Point } from "./point";
+import { Point } from "./Point";
 
 export class Drag {
   start = new Point(0, 0);

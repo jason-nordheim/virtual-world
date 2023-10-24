@@ -1,5 +1,5 @@
 import { Graph, Point, Segment } from "./lib";
-import { GraphEditor } from "./lib/graphEditor";
+import { GraphEditor } from "./lib/GraphEditor";
 import "./style.css";
 
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;

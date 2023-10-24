@@ -1,4 +1,4 @@
-import { Point } from "./point";
+import { Point } from "./Point";
 
 export const scale = (p: Point, scalar: number) => new Point(p.x * scalar, p.y * scalar);
 

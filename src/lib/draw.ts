@@ -1,6 +1,6 @@
 import { Segment } from ".";
 import { DEFAULTS, PointDrawOptions, SegmentDrawOptions } from "./common";
-import { Point } from "./point";
+import { Point } from "./Point";
 
 export const drawPoint = (ctx: CanvasRenderingContext2D, p: Point, opts?: Partial<PointDrawOptions>) => {
   const completeOpts = { ...DEFAULTS.DRAW.POINT, ...opts };
@@ -34,7 +34,7 @@ export const drawSegment = (ctx: CanvasRenderingContext2D, s: Segment, opts?: Pa
   ctx.lineWidth = completeOpts.width;
   ctx.strokeStyle = completeOpts.color;
   ctx.setLineDash(completeOpts.dash);
-  ctx.moveTo(s.p1.x, s.p1.y); 
+  ctx.moveTo(s.p1.x, s.p1.y);
   ctx.lineTo(s.p2.x, s.p2.y);
   ctx.stroke();
   ctx.setLineDash([]); // reset

@@ -1,6 +1,6 @@
 import { drawPoints, drawSegments } from "./draw";
-import { Point } from "./point";
-import { Segment } from "./segment";
+import { Point } from "./Point";
+import { Segment } from "./Segment";
 
 /// represents the actual data
 export class Graph {
