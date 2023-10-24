@@ -1,5 +1,3 @@
-import { Point } from "./point";
-
 export type GraphOpts = {
   height: number;
   width: number;
@@ -20,13 +18,6 @@ export type SegmentDrawOptions = {
 };
 
 export type GraphMode = "add" | "remove" | "pan";
-
-export type Drag = {
-  start: Point;
-  end: Point;
-  offset: Point;
-  active: boolean;
-};
 
 export const DEFAULTS = {
   GRAPH: {

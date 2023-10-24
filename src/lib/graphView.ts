@@ -1,4 +1,5 @@
-import { Drag, GraphOpts } from "./common";
+import { Drag } from "./Drag";
+import { GraphOpts } from "./common";
 import { add, clamp, scale, subtract } from "./math";
 import { Point } from "./point";
 
@@ -6,19 +7,12 @@ const ZOOM_STEP = 0.1;
 const ZOOM_MAX = 5;
 const ZOOM_MIN = 1;
 
-const INITIAL_DRAG: Drag = {
-  start: new Point(0, 0),
-  end: new Point(0, 0),
-  offset: new Point(0, 0),
-  active: false,
-};
-
 // represents the view
 export class GraphView {
+  public drag: Drag = new Drag();
   private canvas: HTMLCanvasElement;
   private _zoom: number = 1;
-  private drag: Drag = INITIAL_DRAG;
-  private offset: Point;
+  public offset: Point;
 
   readonly height: number;
   readonly width: number;
@@ -77,9 +71,15 @@ export class GraphView {
     this.ctx.save();
   }
 
-  public scale() {
+  public update() {
     const s = this.getScale();
     this.ctx.scale(s, s);
+    this.ctx.translate(this.offset.x, this.offset.y);
+  }
+
+  public resetDrag() {
+    this.drag = new Drag();
+    console.log("drag reset", this.drag);
   }
 
   public restore() {

@@ -1,7 +1,7 @@
 import { Point } from "./point";
 import { Graph } from "./graph";
 import { DEFAULTS, GraphMode, GraphOpts } from "./common";
-import { getNearestPoint } from "./math";
+import { getNearestPoint, subtract } from "./math";
 import { GraphView } from "./GraphView";
 
 // represents the controlling of the graph
@@ -36,6 +36,11 @@ export class GraphEditor {
 
   private handleMouseUp() {
     this.graph.dragging = false;
+
+    if (this.view.drag.active) {
+      this.view.offset = this.view.getOffset();
+      this.view.resetDrag();
+    }
   }
 
   private handleMouseDown(evt: MouseEvent) {
@@ -60,6 +65,11 @@ export class GraphEditor {
         this.removePoint(nearest);
       }
     }
+
+    if (this.mode === "pan") {
+      this.view.drag.start = this.view.getMousePosition(evt);
+      this.view.drag.active = true;
+    }
   }
 
   private removePoint(p: Point) {
@@ -74,12 +84,18 @@ export class GraphEditor {
       this.graph.selected.x = evt.offsetX;
       this.graph.selected.y = evt.offsetY;
     }
+
+    if (this.view.drag.active) {
+      this.view.drag.end = this.view.getMousePosition(evt);
+      this.view.drag.offset = subtract(this.view.drag.end, this.view.drag.start);
+      console.log(JSON.stringify(this.view.drag));
+    }
   }
 
   public display() {
     this.view.clear();
     this.view.save();
-    this.view.scale();
+    this.view.update();
     this.graph.draw(this.mouse);
     this.view.restore();
   }
