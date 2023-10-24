@@ -17,6 +17,12 @@ export type SegmentDrawOptions = {
   dash: [number, number];
 };
 
+export type PolygonDrawOptions = {
+  stroke: string;
+  lineWidth: number;
+  fill: string;
+};
+
 export type GraphMode = "add" | "remove" | "pan";
 
 export const DEFAULTS = {
@@ -36,6 +42,11 @@ export const DEFAULTS = {
       width: 2,
       color: "black",
       dash: [],
+    },
+    POLYGON: {
+      stroke: "blue",
+      lineWidth: 2,
+      fill: "#0000ff1a",
     },
   },
 };

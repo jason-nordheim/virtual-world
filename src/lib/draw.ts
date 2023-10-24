@@ -1,5 +1,5 @@
 import { Segment } from ".";
-import { DEFAULTS, PointDrawOptions, SegmentDrawOptions } from "./common";
+import { DEFAULTS, PointDrawOptions, PolygonDrawOptions, SegmentDrawOptions } from "./common";
 import { Point } from "./Point";
 
 export const drawPoint = (ctx: CanvasRenderingContext2D, p: Point, opts?: Partial<PointDrawOptions>) => {
@@ -65,4 +65,19 @@ export const drawPoints = (
       drawPoint(ctx, points[i]);
     }
   }
+};
+
+export const drawPolygon = (ctx: CanvasRenderingContext2D, points: Point[], opts?: Partial<PolygonDrawOptions>) => {
+  const completeOpts = { ...DEFAULTS.DRAW.POLYGON, opts };
+  ctx.beginPath();
+  ctx.fillStyle = completeOpts.fill;
+  ctx.strokeStyle = completeOpts.stroke;
+  ctx.lineWidth = completeOpts.lineWidth;
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
 };

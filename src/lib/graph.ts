@@ -1,4 +1,4 @@
-import { drawPoints, drawSegments } from "./draw";
+import { drawPoints, drawPolygon, drawSegments } from "./draw";
 import { Point } from "./Point";
 import { Segment } from "./Segment";
 
@@ -109,6 +109,7 @@ export class Graph {
     this.ctx.save();
     drawSegments(this.ctx, this.segments);
     drawPoints(this.ctx, this.points, mousePosition, this.selected, this.hovered);
+    drawPolygon(this.ctx, this.points);
     this.ctx.restore();
   }
 }
