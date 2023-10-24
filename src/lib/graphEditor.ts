@@ -2,13 +2,13 @@ import { Point } from "./Point";
 import { Graph } from "./Graph";
 import { DEFAULTS, GraphMode, GraphOpts } from "./common";
 import { getNearestPoint, subtract } from "./math";
-import { GraphView } from "./GraphView";
+import { GraphView, SerializedGraphView } from "./GraphView";
 import { Segment } from "./Segment";
 
 type PreLoadData = {
   points: Point[];
   segments: Segment[];
-  view: GraphView;
+  view: SerializedGraphView;
 };
 
 // represents the controlling of the graph
@@ -105,7 +105,10 @@ export class GraphEditor {
   }
 
   public save() {
-    localStorage.setItem("graph", JSON.stringify({ points: this.graph.points, segments: this.graph.segments }));
+    localStorage.setItem(
+      "graph",
+      JSON.stringify({ points: this.graph.points, segments: this.graph.segments, view: this.view.serialize() })
+    );
   }
 
   public load(data: PreLoadData) {
@@ -123,6 +126,8 @@ export class GraphEditor {
         )
       );
     }
+
+    this.view.deserialize(data.view);
   }
 
   public display() {

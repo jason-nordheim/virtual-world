@@ -7,6 +7,12 @@ const ZOOM_STEP = 0.1;
 const ZOOM_MAX = 5;
 const ZOOM_MIN = 1;
 
+export type SerializedGraphView = {
+  drag: Drag;
+  zoom: number;
+  offset: Point;
+};
+
 // represents the view
 export class GraphView {
   public drag: Drag = new Drag();
@@ -88,6 +94,20 @@ export class GraphView {
 
   public restore() {
     this.ctx.restore();
+  }
+
+  public serialize() {
+    return {
+      drag: this.drag,
+      zoom: this._zoom,
+      offset: this.offset,
+    };
+  }
+
+  public deserialize(data: SerializedGraphView) {
+    this._zoom = data.zoom;
+    this.drag = data.drag;
+    this.offset = data.offset;
   }
 
   // public reset() {
