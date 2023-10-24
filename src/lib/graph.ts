@@ -40,10 +40,6 @@ export class Graph {
   private dragging: boolean = false;
   private mouse: Point = new Point(0, 0);
 
-  private zoom: number = 1;
-  // private zoomScale: number = 0.1;
-  // private zoomOffset: Point = new Point(0, 0);
-
   constructor(canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.canvas = canvas;
     this.height = opts.height;
@@ -134,8 +130,8 @@ export class Graph {
   }
 
   private handleMouseMove(evt: MouseEvent) {
-    this.mouse = getPosition(evt, this.zoom);
-    this.hovered = getNearestPoint(this.mouse, this.points, 10 * this.zoom);
+    this.mouse = getPosition(evt);
+    this.hovered = getNearestPoint(this.mouse, this.points, 10);
 
     if (this.dragging && this.selected) {
       this.selected.x = evt.offsetX;
