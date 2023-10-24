@@ -1,25 +1,8 @@
-import { getNearestPoint } from "./graph.utils";
+import { GraphMode, GraphOpts, PointDrawOptions, SegmentDrawOptions } from "./common";
+import { getPosition } from "./helpers";
+import { add, getNearestPoint, subtract } from "./math";
 import { Point } from "./point";
 import { Segment } from "./segment";
-
-export type GraphOpts = {
-  height: number;
-  width: number;
-  backgroundColor: string;
-};
-
-export type PointDrawOptions = {
-  size: number;
-  color: string;
-  outline: boolean;
-  fill: boolean;
-};
-
-export type SegmentDrawOptions = {
-  width: number;
-  color: string;
-  dash: [number, number];
-};
 
 const DEFAULTS = {
   GRAPH: {
@@ -42,8 +25,6 @@ const DEFAULTS = {
   },
 };
 
-type GraphMode = "add" | "remove";
-
 export class Graph {
   private canvas: HTMLCanvasElement;
   private height: number;
@@ -58,8 +39,10 @@ export class Graph {
   private mode: GraphMode = "add";
   private dragging: boolean = false;
   private mouse: Point = new Point(0, 0);
-  private _zoom: number = 1;
-  private _zoomScale: number = 0.1;
+
+  private zoom: number = 1;
+  // private zoomScale: number = 0.1;
+  // private zoomOffset: Point = new Point(0, 0);
 
   constructor(canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.canvas = canvas;
@@ -76,20 +59,41 @@ export class Graph {
     this.canvas.addEventListener("mousemove", (evt) => this.handleMouseMove(evt));
     this.canvas.addEventListener("mouseup", () => this.handleMouseUp());
     this.canvas.addEventListener("contextmenu", (evt) => this.handleRightClick(evt));
-    if (document) {
-      document.addEventListener("wheel", (evt) => {
-        const sign = Math.sign(evt.deltaY);
-        this._zoom = Math.max(1, Math.min(5, this._zoom + this._zoom * sign * this._zoomScale));
-      });
-    }
+
+    // if (document) {
+    //   document.addEventListener("wheel", (evt) => {
+    //     if (!this.drag.active) {
+    //       const sign = Math.sign(evt.deltaY);
+    //       this.zoom = Math.max(1, Math.min(5, this.zoom + this.zoom * sign * this.zoomScale));
+    //     }
+    //   });
+    //   document.addEventListener("keydown", (evt) => {
+    //     if (evt.metaKey) {
+    //       this.drag.active = true;
+    //       this.drag.start = this.mouse;
+    //     }
+    //   });
+    //   document.addEventListener("keyup", (evt) => {
+    //     if (evt.metaKey) {
+    //       this.zoomOffset = add(this.zoomOffset, this.drag.offset);
+    //       // reset
+    //       this.drag = {
+    //         start: new Point(0, 0),
+    //         end: new Point(0, 0),
+    //         offset: new Point(0, 0),
+    //         active: false,
+    //       };
+    //     }
+    //   });
+    // }
   }
 
-  private dispose() {
-    this.canvas.removeEventListener("mousedown", (evt) => this.handleMouseDown(evt));
-    this.canvas.removeEventListener("mousemove", (evt) => this.handleMouseMove(evt));
-    this.canvas.removeEventListener("mouseup", () => this.handleMouseUp());
-    this.canvas.removeEventListener("contextmenu", (evt) => this.handleRightClick(evt));
-  }
+  // private dispose() {
+  //   this.canvas.removeEventListener("mousedown", (evt) => this.handleMouseDown(evt));
+  //   this.canvas.removeEventListener("mousemove", (evt) => this.handleMouseMove(evt));
+  //   this.canvas.removeEventListener("mouseup", () => this.handleMouseUp());
+  //   this.canvas.removeEventListener("contextmenu", (evt) => this.handleRightClick(evt));
+  // }
 
   private get ctx() {
     return this.canvas.getContext("2d")!;
@@ -130,13 +134,18 @@ export class Graph {
   }
 
   private handleMouseMove(evt: MouseEvent) {
-    this.mouse = new Point(evt.offsetX, evt.offsetY);
-    this.hovered = getNearestPoint(this.mouse, this.points, 10);
+    this.mouse = getPosition(evt, this.zoom);
+    this.hovered = getNearestPoint(this.mouse, this.points, 10 * this.zoom);
 
     if (this.dragging && this.selected) {
       this.selected.x = evt.offsetX;
       this.selected.y = evt.offsetY;
     }
+
+    // if (this.drag.active) {
+    //   this.drag.end = this.mouse;
+    //   this.drag.offset = subtract(this.drag.end, this.drag.start);
+    // }
   }
 
   private pointExists(p: Point) {
@@ -239,11 +248,6 @@ export class Graph {
     }
   }
 
-  private updateViewport() {
-    const scale = 1 / this._zoom;
-    this.ctx.scale(scale, scale);
-  }
-
   private drawSegments() {
     for (let i = 0; i < this.segments.length; i++) {
       this.drawSegment(this.segments[i]);
@@ -281,10 +285,8 @@ export class Graph {
   public display() {
     this.clear();
     this.ctx.save();
-    this.updateViewport();
     this.drawSegments();
     this.drawPoints();
-    this.ctx.restore();
     this.ctx.restore();
   }
 }
