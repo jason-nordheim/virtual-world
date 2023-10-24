@@ -5,7 +5,7 @@ import { getNearestPoint, subtract } from "./math";
 import { GraphView, SerializedGraphView } from "./GraphView";
 import { Segment } from "./Segment";
 
-type PreLoadData = {
+type SerializedData = {
   points: Point[];
   segments: Segment[];
   view: SerializedGraphView;
@@ -111,7 +111,7 @@ export class GraphEditor {
     );
   }
 
-  public load(data: PreLoadData) {
+  public load(data: SerializedData) {
     const points: Point[] = [];
     for (let i = 0; i < data.points.length; i++) {
       const p = new Point(data.points[i].x, data.points[i].y);
