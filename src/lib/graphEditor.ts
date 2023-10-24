@@ -11,6 +11,8 @@ type SerializedData = {
   view: SerializedGraphView;
 };
 
+type OnModeChangeCallback = (mode: GraphMode) => void;
+
 // represents the controlling of the graph
 export class GraphEditor {
   private canvas: HTMLCanvasElement;
@@ -19,6 +21,7 @@ export class GraphEditor {
   private mode: GraphMode = "pan";
   private mouse: Point = new Point(0, 0);
   private mouseWithOffset = new Point(0, 0);
+  private modeChangeCallbacks: OnModeChangeCallback[] = [];
 
   constructor(graph: Graph, canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.graph = graph;
@@ -32,8 +35,27 @@ export class GraphEditor {
     this.canvas.addEventListener("contextmenu", (evt) => this.handleRightClick(evt));
   }
 
+  public addModeChangeCallback(cb: OnModeChangeCallback) {
+    this.modeChangeCallbacks.push(cb);
+  }
+
+  public setupKeyboardListeners() {
+    document.addEventListener("keypress", (evt) => {
+      if (evt.key === "a") {
+        this.setMode("add");
+      }
+      if (evt.key === "r") {
+        this.setMode("remove");
+      }
+      if (evt.key === "p") {
+        this.setMode("pan");
+      }
+    });
+  }
+
   public setMode(mode: GraphMode) {
     this.mode = mode;
+    this.modeChangeCallbacks.forEach((fn) => fn(this.mode));
   }
 
   private handleRightClick(evt: MouseEvent) {

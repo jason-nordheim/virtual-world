@@ -45,7 +45,10 @@ const editor = new GraphEditor(graph, canvas);
 if (data) {
   editor.load(data);
 }
-
+editor.setupKeyboardListeners();
+editor.addModeChangeCallback((newMode) => {
+  modeToggle.value = newMode;
+});
 resetBtn.addEventListener("click", () => editor.dispose());
 saveBtn.addEventListener("click", () => editor.save());
 controls?.appendChild(resetBtn);
