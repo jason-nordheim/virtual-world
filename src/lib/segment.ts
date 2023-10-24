@@ -3,6 +3,7 @@ import { Point } from "./Point";
 export class Segment {
   p1: Point;
   p2: Point;
+
   constructor(p1: Point, p2: Point) {
     this.p1 = p1;
     this.p2 = p2;
