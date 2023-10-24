@@ -11,6 +11,7 @@ export class GraphEditor {
   private view: GraphView;
   private mode: GraphMode = "pan";
   private mouse: Point = new Point(0, 0);
+  private mouseWithOffset = new Point(0, 0);
 
   constructor(graph: Graph, canvas: HTMLCanvasElement, opts: GraphOpts = DEFAULTS.GRAPH) {
     this.graph = graph;
@@ -78,6 +79,7 @@ export class GraphEditor {
 
   private handleMouseMove(evt: MouseEvent) {
     this.mouse = this.view.getMousePosition(evt);
+    this.mouseWithOffset = this.view.getMousePosition(evt, true);
     this.graph.hovered = getNearestPoint(this.mouse, this.graph.points, 10 * this.view.zoom);
 
     if (this.graph.dragging && this.graph.selected) {
@@ -95,7 +97,7 @@ export class GraphEditor {
     this.view.clear();
     this.view.save();
     this.view.update();
-    this.graph.draw(this.mouse);
+    this.graph.draw(this.mouseWithOffset);
     this.view.restore();
   }
 }

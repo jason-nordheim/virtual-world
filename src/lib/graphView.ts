@@ -55,7 +55,10 @@ export class GraphView {
   }
 
   public getMousePosition(evt: MouseEvent, subtractOffset = false) {
-    const p = new Point(evt.offsetX * this._zoom, evt.offsetY * this._zoom);
+    const p = new Point(
+      (evt.offsetX - this.center.x) * this._zoom - this.offset.x,
+      (evt.offsetY - this.center.y) * this._zoom - this.offset.y
+    );
     return subtractOffset ? subtract(p, this.drag.offset) : p;
   }
 
