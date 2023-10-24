@@ -19,11 +19,32 @@ export type SegmentDrawOptions = {
   dash: [number, number];
 };
 
-export type GraphMode = "add" | "remove";
+export type GraphMode = "add" | "remove" | "pan";
 
 export type Drag = {
   start: Point;
   end: Point;
   offset: Point;
   active: boolean;
+};
+
+export const DEFAULTS = {
+  GRAPH: {
+    height: 600,
+    width: 600,
+    backgroundColor: "green",
+  },
+  DRAW: {
+    POINT: {
+      size: 18,
+      color: "black",
+      outline: false,
+      fill: false,
+    },
+    SEGMENT: {
+      width: 2,
+      color: "black",
+      dash: [],
+    },
+  },
 };

@@ -1,4 +1,5 @@
 import { Graph, Point, Segment } from "./lib";
+import { GraphEditor } from "./lib/graphEditor";
 import "./style.css";
 
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
@@ -13,8 +14,11 @@ const modeAdd = document.createElement("option");
 modeAdd.value = modeAdd.text = "add";
 const modeRemove = document.createElement("option");
 modeRemove.value = modeRemove.text = "remove";
+const modePan = document.createElement("option");
+modePan.value = modePan.textContent = "pan";
 modeToggle.appendChild(modeRemove);
 modeToggle.appendChild(modeAdd);
+modeToggle.appendChild(modePan);
 modeToggle.value = "add";
 controls?.appendChild(modeToggle);
 controls?.appendChild(clearSelectedBtn);
@@ -41,9 +45,11 @@ graph.addSegment(s2);
 graph.addSegment(s3);
 graph.addSegment(s4);
 
+const editor = new GraphEditor(graph, canvas);
+
 modeToggle.addEventListener("change", (evt) => {
   // @ts-expect-error
-  graph.setMode(evt.target.value);
+  editor.setMode(evt.target.value);
 });
 clearSelectedBtn.onclick = () => {
   graph.clearSelected();
@@ -55,8 +61,7 @@ document.addEventListener("keydown", (evt) => {
 });
 
 function animate() {
-  graph.display();
-
+  editor.display();
   requestAnimationFrame(animate);
 }
 animate();

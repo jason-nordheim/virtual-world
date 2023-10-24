@@ -1,5 +1,4 @@
-import { Drag } from "./common";
-import { getPosition } from "./helpers";
+import { Drag, GraphOpts } from "./common";
 import { add, scale, subtract } from "./math";
 import { Point } from "./point";
 
@@ -10,9 +9,9 @@ const INITIAL_DRAG: Drag = {
   active: false,
 };
 
-class GraphView {
+// represents the view
+export class GraphView {
   private canvas: HTMLCanvasElement;
-  private mouse: Point = new Point(0, 0);
   private _zoom: number = 1;
   private drag: Drag = INITIAL_DRAG;
   private offset: Point;
@@ -21,39 +20,29 @@ class GraphView {
   readonly width: number;
   readonly center: Point;
 
-  constructor(canvas: HTMLCanvasElement, height: number, width: number) {
+  constructor(canvas: HTMLCanvasElement, opts: GraphOpts) {
     this.canvas = canvas;
-    this.height = height;
-    this.width = width;
-    this.center = new Point(width / 2, height / 2);
-    this.offset = scale(this.center, -1);
+    this.canvas.style.backgroundColor = opts.backgroundColor;
 
-    document.addEventListener("mousemove", (evt) => {
-      if (this.drag.active && this.drag.start === INITIAL_DRAG.start) {
-        this.drag.start = getPosition(evt, this._zoom);
-      } else if (this.drag.active) {
-        this.drag.end = getPosition(evt, this._zoom);
-        this.drag.offset = subtract(this.drag.end, this.drag.start);
-      }
-    });
-    document.addEventListener("keydown", (evt) => {
-      if (evt.metaKey) {
-        this.drag.active = true;
-      }
-    });
-    document.addEventListener("keyup", (evt) => {
-      if (evt.metaKey) {
-        this.drag.active = false;
-      }
-    });
-    document.addEventListener("wheel", (evt) => {});
+    // height
+    this.height = opts.height;
+    this.canvas.height = opts.height;
+    this.canvas.style.height = `${opts.height}px`;
+
+    //width
+    this.width = opts.width;
+    this.canvas.width = opts.width;
+    this.canvas.style.width = `${opts.width}px`;
+
+    this.center = new Point(opts.width / 2, opts.height / 2);
+    this.offset = scale(this.center, -1);
   }
 
   private get ctx(): CanvasRenderingContext2D {
     return this.canvas.getContext("2d")!;
   }
 
-  private get scale() {
+  public get scale() {
     return 1 / this.zoom;
   }
 
@@ -71,6 +60,10 @@ class GraphView {
 
   public getOffset() {
     return add(this.offset, this.drag.offset);
+  }
+
+  public clear() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   public reset() {
