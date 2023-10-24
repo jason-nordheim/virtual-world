@@ -1,6 +1,10 @@
 import { Drag, GraphOpts } from "./common";
-import { add, scale, subtract } from "./math";
+import { add, clamp, scale, subtract } from "./math";
 import { Point } from "./point";
+
+const ZOOM_STEP = 0.1;
+const ZOOM_MAX = 5;
+const ZOOM_MIN = 1;
 
 const INITIAL_DRAG: Drag = {
   start: new Point(0, 0),
@@ -36,13 +40,19 @@ export class GraphView {
 
     this.center = new Point(opts.width / 2, opts.height / 2);
     this.offset = scale(this.center, -1);
+
+    this.canvas.addEventListener("wheel", (evt) => {
+      const direction = Math.sign(evt.deltaY);
+      const val = this._zoom + direction * ZOOM_STEP;
+      this._zoom = clamp(val, ZOOM_MIN, ZOOM_MAX);
+    });
   }
 
   private get ctx(): CanvasRenderingContext2D {
     return this.canvas.getContext("2d")!;
   }
 
-  public get scale() {
+  private getScale() {
     return 1 / this.zoom;
   }
 
@@ -51,10 +61,7 @@ export class GraphView {
   }
 
   public getMousePosition(evt: MouseEvent, subtractOffset = false) {
-    const p = new Point(
-      (evt.offsetX - this.center.x) * this._zoom - this.offset.x,
-      (evt.offsetY - this.center.y) * this._zoom - this.offset.y
-    );
+    const p = new Point(evt.offsetX * this._zoom, evt.offsetY * this._zoom);
     return subtractOffset ? subtract(p, this.drag.offset) : p;
   }
 
@@ -66,11 +73,24 @@ export class GraphView {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
-  public reset() {
-    this.ctx.restore();
-    this.ctx.clearRect(0, 0, this.width, this.height);
+  public save() {
     this.ctx.save();
-    this.ctx.translate(this.center.x, this.center.y);
-    this.ctx.scale(this.scale, this.scale);
   }
+
+  public scale() {
+    const s = this.getScale();
+    this.ctx.scale(s, s);
+  }
+
+  public restore() {
+    this.ctx.restore();
+  }
+
+  // public reset() {
+  //   this.ctx.restore();
+  //   this.ctx.clearRect(0, 0, this.width, this.height);
+  //   this.ctx.save();
+  //   this.ctx.translate(this.center.x, this.center.y);
+  //   this.ctx.scale(this.scale, this.scale);
+  // }
 }

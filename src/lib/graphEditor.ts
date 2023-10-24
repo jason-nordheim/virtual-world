@@ -1,7 +1,6 @@
 import { Point } from "./point";
 import { Graph } from "./graph";
-import { getPosition } from "./helpers";
-import { DEFAULTS, Drag, GraphMode, GraphOpts } from "./common";
+import { DEFAULTS, GraphMode, GraphOpts } from "./common";
 import { getNearestPoint } from "./math";
 import { GraphView } from "./GraphView";
 
@@ -68,7 +67,7 @@ export class GraphEditor {
   }
 
   private handleMouseMove(evt: MouseEvent) {
-    this.mouse = getPosition(evt);
+    this.mouse = this.view.getMousePosition(evt);
     this.graph.hovered = getNearestPoint(this.mouse, this.graph.points, 10);
 
     if (this.graph.dragging && this.graph.selected) {
@@ -79,6 +78,9 @@ export class GraphEditor {
 
   public display() {
     this.view.clear();
+    this.view.save();
+    this.view.scale();
     this.graph.draw(this.mouse);
+    this.view.restore();
   }
 }
