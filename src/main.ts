@@ -40,9 +40,11 @@ saveBtn.textContent = "save";
 
 const graphString = localStorage.getItem("graph");
 const data = graphString ? JSON.parse(graphString) : undefined;
-const graph = new Graph(canvas, data);
-
+const graph = new Graph(canvas);
 const editor = new GraphEditor(graph, canvas);
+if (data) {
+  editor.load(data);
+}
 
 resetBtn.addEventListener("click", () => editor.dispose());
 saveBtn.addEventListener("click", () => editor.save());

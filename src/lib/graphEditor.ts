@@ -3,6 +3,13 @@ import { Graph } from "./Graph";
 import { DEFAULTS, GraphMode, GraphOpts } from "./common";
 import { getNearestPoint, subtract } from "./math";
 import { GraphView } from "./GraphView";
+import { Segment } from "./Segment";
+
+type PreLoadData = {
+  points: Point[];
+  segments: Segment[];
+  view: GraphView;
+};
 
 // represents the controlling of the graph
 export class GraphEditor {
@@ -80,11 +87,11 @@ export class GraphEditor {
   private handleMouseMove(evt: MouseEvent) {
     this.mouse = this.view.getMousePosition(evt);
     this.mouseWithOffset = this.view.getMousePosition(evt, true);
-    this.graph.hovered = getNearestPoint(this.mouse, this.graph.points, 10 * this.view.zoom);
+    this.graph.hovered = getNearestPoint(this.mouseWithOffset, this.graph.points, 10 * this.view.zoom);
 
     if (this.graph.dragging && this.graph.selected) {
-      this.graph.selected.x = evt.offsetX;
-      this.graph.selected.y = evt.offsetY;
+      this.graph.selected.x = this.mouseWithOffset.x;
+      this.graph.selected.y = this.mouseWithOffset.y;
     }
 
     if (this.view.drag.active) {
@@ -99,6 +106,23 @@ export class GraphEditor {
 
   public save() {
     localStorage.setItem("graph", JSON.stringify({ points: this.graph.points, segments: this.graph.segments }));
+  }
+
+  public load(data: PreLoadData) {
+    const points: Point[] = [];
+    for (let i = 0; i < data.points.length; i++) {
+      const p = new Point(data.points[i].x, data.points[i].y);
+      points.push(p);
+      this.graph.addPoint(p);
+    }
+    for (let i = 0; i < data.segments.length; i++) {
+      this.graph.addSegment(
+        new Segment(
+          points.find((p) => p.equals(data.segments[i].p1))!,
+          points.find((p) => p.equals(data.segments[i].p2))!
+        )
+      );
+    }
   }
 
   public display() {
